@@ -1,20 +1,17 @@
-// eslint-disable-next-line import/no-unresolved
-import { App } from "firebase-admin/app"
-// eslint-disable-next-line import/no-unresolved
-import { Auth, getAuth, UserRecord } from "firebase-admin/auth"
+import { app, auth } from "firebase-admin"
 import CustomError from "./customError"
 
 class UserService {
-  private firebaseApp: App
+  private firebaseApp: app.App
 
-  private auth: Auth
+  private auth: auth.Auth
 
-  constructor(firebaseApp: App) {
+  constructor(firebaseApp: app.App) {
     this.firebaseApp = firebaseApp
-    this.auth = getAuth(this.firebaseApp)
+    this.auth = auth(this.firebaseApp)
   }
 
-  async getUser(idToken: string): Promise<UserRecord> {
+  async getUser(idToken: string): Promise<auth.UserRecord> {
     try {
       const token = await this.auth.verifyIdToken(idToken)
       return this.auth.getUser(token.uid)

@@ -1,7 +1,6 @@
 import * as path from "path"
 import * as fs from "fs"
-// eslint-disable-next-line import/no-unresolved
-import { initializeApp, getApps, cert } from "firebase-admin/app"
+import { initializeApp, apps, credential } from "firebase-admin"
 
 const getCredentials = () => {
   let filePath: string
@@ -24,11 +23,11 @@ const getInstance = () => {
   if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
     return initializeApp({ projectId: process.env.GCLOUD_PROJECT }, "emulator")
   }
-  if (getApps().length > 0) {
-    return getApps()[0]
+  if (apps.length > 0) {
+    return apps[0]
   }
   return initializeApp({
-    credential: cert(getCredentials()),
+    credential: credential.cert(getCredentials()),
     databaseURL: "https://phupha-digital.firebaseio.com",
   })
 }

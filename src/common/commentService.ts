@@ -1,23 +1,16 @@
-// eslint-disable-next-line import/no-unresolved
-import { App } from "firebase-admin/app"
-import {
-  Firestore,
-  getFirestore,
-  CollectionReference,
-  // eslint-disable-next-line import/no-unresolved
-} from "firebase-admin/firestore"
+import { app, firestore } from "firebase-admin"
 import { CreateComment } from "../models"
 
 class CommentService {
-  private firebaseApp: App
+  private firebaseApp: app.App
 
-  private firestore: Firestore
+  private firestore: firestore.Firestore
 
-  private commentsRef: CollectionReference
+  private commentsRef: firestore.CollectionReference
 
-  constructor(firebaseApp: App) {
+  constructor(firebaseApp: app.App) {
     this.firebaseApp = firebaseApp
-    this.firestore = getFirestore(this.firebaseApp)
+    this.firestore = firestore(this.firebaseApp)
     this.commentsRef = this.firestore.collection("comments")
   }
 
