@@ -48,6 +48,9 @@ typings/
 .env.test
 !.env.example
 
+# Firebase application credentials
+credentials.json
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 

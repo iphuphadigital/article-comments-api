@@ -55,7 +55,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: "phupha-digital-firebase-adminsdk.json",
+          from: "credentials.json",
           to: "src/handlers",
         },
       ],
