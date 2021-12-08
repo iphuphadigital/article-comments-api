@@ -1,15 +1,33 @@
 import * as admin from "firebase-admin"
-import { Comment } from "../../src/models"
+import { Comment, CreateComment } from "../../src/models"
 
 class Database {
   private firestore: admin.firestore.Firestore
 
+  private commentsRef: admin.firestore.CollectionReference
+
   constructor(firebaseApp: admin.app.App) {
     this.firestore = admin.firestore(firebaseApp)
+    this.commentsRef = this.firestore.collection("comments")
   }
 
-  getSingleComment = async (id: string): Promise<Comment> => {
-    const snapshot = await this.firestore.collection("comments").doc(id).get()
+  createSingleComment = async (uid: string): Promise<string> => {
+    const create: CreateComment = {
+      reference: "article-id-1",
+      parentId: null,
+      text: `this comment was created by ${uid}`,
+    }
+    const doc = this.commentsRef.doc()
+    await doc.set({ ...create, uid })
+    return doc.id
+  }
+
+  getSingleComment = async (id: string): Promise<Comment | null> => {
+    const snapshot = await this.commentsRef.doc(id).get()
+    if (!snapshot.exists) {
+      return null
+    }
+
     const data = snapshot.data()
     return {
       reference: data.reference,
@@ -20,12 +38,10 @@ class Database {
   }
 
   deleteAll = async () => {
-    const querySnapshot = await this.firestore.collection("comments").get()
+    const querySnapshot = await this.commentsRef.get()
     const deletions: Promise<admin.firestore.WriteResult>[] = []
     querySnapshot.docs.forEach(snapshot => {
-      deletions.push(
-        this.firestore.collection("comments").doc(snapshot.id).delete()
-      )
+      deletions.push(this.commentsRef.doc(snapshot.id).delete())
     })
     await Promise.all(deletions)
   }
