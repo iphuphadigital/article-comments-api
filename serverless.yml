@@ -1,0 +1,84 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: comments-service
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: "2"
+
+useDotenv: true
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+provider:
+  name: azure
+  region: South Africa North
+  runtime: nodejs12
+  # os: windows  # windows is default, linux is available
+  # prefix: "sample"  # prefix of generated resource name
+  # subscriptionId: A356AC8C-E310-44F4-BF85-C7F29044AF99
+  # stage: dev
+  # type: premium  # premium azure functions
+
+  environment: # these will be created as application settings
+    GOOGLE_APPLICATION_CREDENTIALS: "${env:GOOGLE_APPLICATION_CREDENTIALS}"
+
+plugins: # look for additional plugins in the community plugins repo: https://github.com/serverless/plugins
+  - serverless-azure-functions
+  - serverless-webpack
+
+functions:
+  createSingleComment:
+    handler: src/handlers/createSingle.default
+    events:
+      - http: true
+        methods:
+          - POST
+        route: "comments"
+    name: comments-service-production-createSingleComment
+  getAllComments:
+    handler: src/handlers/getAll.default
+    events:
+      - http: true
+        methods:
+          - GET
+        route: "comments"
+    name: comments-service-production-getAllComments
+  getSingleComment:
+    handler: src/handlers/getSingle.default
+    events:
+      - http: true
+        methods:
+          - GET
+        route: "comments/{id}"
+    name: comments-service-production-getSingleComment
+  updateSingleComment:
+    handler: src/handlers/updateSingle.default
+    events:
+      - http: true
+        methods:
+          - PATCH
+        route: "comments/{id}"
+    name: comments-service-production-updateSingleComment
+  deleteSingleComment:
+    handler: src/handlers/deleteSingle.default
+    events:
+      - http: true
+        methods:
+          - DELETE
+        route: "comments/{id}"
+    name: comments-service-production-deleteSingleComment
