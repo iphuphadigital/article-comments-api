@@ -2,6 +2,7 @@ const path = require("path")
 const slsw = require("serverless-webpack")
 const nodeExternals = require("webpack-node-externals")
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin")
+const CopyPlugin = require("copy-webpack-plugin")
 
 module.exports = {
   context: __dirname,
@@ -20,8 +21,11 @@ module.exports = {
     path: path.join(__dirname, ".webpack"),
     filename: "[name].js",
   },
-  target: "node",
-  externals: [nodeExternals()],
+  target: "node", // use require() & use NodeJs CommonJS style
+  externals: [nodeExternals()], // in order to ignore all modules in node_modules folder
+  externalsPresets: {
+    node: true, // in order to ignore built-in modules like path, fs, etc.
+  },
   module: {
     rules: [
       // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
@@ -47,6 +51,14 @@ module.exports = {
       eslint: {
         files: "./src/**/*.{ts,tsx,js,jsx}",
       },
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "phupha-digital-firebase-adminsdk.json",
+          to: "src/handlers",
+        },
+      ],
     }),
   ],
 }
