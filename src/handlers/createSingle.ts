@@ -9,7 +9,8 @@ import UserService from "../common/userService"
 import { validateInput } from "../common/validateInput"
 import createSingleSchema from "../inputValidation/createSingleSchema"
 
-const createSingle: AzureFunction = async (
+// eslint-disable-next-line import/prefer-default-export
+export const handler: AzureFunction = async (
   context: Context,
   req: HttpRequest
 ): Promise<void> => {
@@ -63,5 +64,3 @@ const createSingle: AzureFunction = async (
     }
   }
 }
-
-export default createSingle

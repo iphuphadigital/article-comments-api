@@ -43,7 +43,7 @@ plugins: # look for additional plugins in the community plugins repo: https://gi
 
 functions:
   createSingleComment:
-    handler: src/handlers/createSingle.default
+    handler: src/handlers/createSingle.handler
     events:
       - http: true
         methods:
@@ -51,7 +51,7 @@ functions:
         route: "comments"
     name: comments-service-production-createSingleComment
   getAllComments:
-    handler: src/handlers/getAll.default
+    handler: src/handlers/getAll.handler
     events:
       - http: true
         methods:
@@ -59,7 +59,7 @@ functions:
         route: "comments"
     name: comments-service-production-getAllComments
   getSingleComment:
-    handler: src/handlers/getSingle.default
+    handler: src/handlers/getSingle.handler
     events:
       - http: true
         methods:
@@ -67,7 +67,7 @@ functions:
         route: "comments/{id}"
     name: comments-service-production-getSingleComment
   updateSingleComment:
-    handler: src/handlers/updateSingle.default
+    handler: src/handlers/updateSingle.handler
     events:
       - http: true
         methods:
@@ -75,7 +75,7 @@ functions:
         route: "comments/{id}"
     name: comments-service-production-updateSingleComment
   deleteSingleComment:
-    handler: src/handlers/deleteSingle.default
+    handler: src/handlers/deleteSingle.handler
     events:
       - http: true
         methods:

@@ -1,7 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 
-const getAll: AzureFunction = async (
+// eslint-disable-next-line import/prefer-default-export
+export const handler: AzureFunction = async (
   context: Context,
   req: HttpRequest
 ): Promise<void> => {
@@ -19,5 +20,3 @@ const getAll: AzureFunction = async (
     }
   }
 }
-
-export default getAll

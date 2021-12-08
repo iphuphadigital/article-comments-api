@@ -1,5 +1,5 @@
 import { Context } from "@azure/functions"
-import createSingle from "../../src/handlers/createSingle"
+import { handler as createSingle } from "../../src/handlers/createSingle"
 import { CreateComment } from "../../src/models"
 import getGlobalUser from "../config/setup"
 import { TestCase } from "../config/testCase"
