@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app"
+import { FirebaseApp } from "firebase/app"
 import {
   Auth,
   getAuth,
@@ -21,14 +21,8 @@ class User {
 
   private numOfUsers = 0
 
-  constructor() {
-    const firebaseConfig = {
-      apiKey: "apikey",
-      projectId: process.env.GCLOUD_PROJECT,
-    }
-
-    const app = initializeApp(firebaseConfig)
-    this.auth = getAuth(app)
+  constructor(firebaseApp: FirebaseApp) {
+    this.auth = getAuth(firebaseApp)
     connectAuthEmulator(
       this.auth,
       `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}`

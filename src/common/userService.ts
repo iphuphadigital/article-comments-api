@@ -1,17 +1,17 @@
-import { app, auth } from "firebase-admin"
+import * as admin from "firebase-admin"
 import CustomError from "./customError"
 
 class UserService {
-  private firebaseApp: app.App
+  private firebaseApp: admin.app.App
 
-  private auth: auth.Auth
+  private auth: admin.auth.Auth
 
-  constructor(firebaseApp: app.App) {
+  constructor(firebaseApp: admin.app.App) {
     this.firebaseApp = firebaseApp
-    this.auth = auth(this.firebaseApp)
+    this.auth = admin.auth(this.firebaseApp)
   }
 
-  async getUser(idToken: string): Promise<auth.UserRecord> {
+  async getUser(idToken: string): Promise<admin.auth.UserRecord> {
     try {
       const token = await this.auth.verifyIdToken(idToken)
       return this.auth.getUser(token.uid)

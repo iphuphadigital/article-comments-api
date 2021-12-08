@@ -29,8 +29,7 @@ export const handler: AzureFunction = async (
     const idToken = authHeader.replace("Bearer ", "")
     const user = await userService.getUser(idToken)
 
-    const id = await commentService.createSingle({
-      uid: user.uid,
+    const id = await commentService.createSingle(user.uid, {
       reference: req.body.reference,
       parentId: req.body.parentId,
       text: req.body.text,

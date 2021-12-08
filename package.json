@@ -5,9 +5,9 @@
   "scripts": {
     "start": "serverless offline",
     "lint": "eslint 'src/**/*.ts'",
-    "test": "cross-env FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 GCLOUD_PROJECT=phupha-digital jest --config ./jest.config.js --rootDir .",
+    "test": "cross-env FIREBASE_AUTH_EMULATOR_HOST=localhost:9099 FIRESTORE_EMULATOR_HOST=localhost:8080 GCLOUD_PROJECT=phupha-digital jest --config ./jest.config.js --rootDir .",
     "test:watch": "npm run test --watch",
-    "test:ci": "npm run test --coverage"
+    "test:ci": "firebase emulators:exec npm run test --coverage"
   },
   "keywords": [
     "azure",

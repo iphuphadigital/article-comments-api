@@ -50,5 +50,5 @@ export const validateInput = async (
   })
 
   if (errors.length > 0)
-    throw new CustomError(422, "Invalid input supplied", errors)
+    throw new CustomError(422, "invalid input supplied", errors)
 }

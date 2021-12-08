@@ -11,6 +11,5 @@ export interface TestCase<T> {
   expected: {
     statusCode: number
     message: string
-    success: boolean
   }
 }

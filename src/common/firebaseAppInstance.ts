@@ -1,6 +1,6 @@
 import * as path from "path"
 import * as fs from "fs"
-import { initializeApp, apps, credential } from "firebase-admin"
+import * as admin from "firebase-admin"
 
 const getCredentials = () => {
   let filePath: string
@@ -20,14 +20,19 @@ const getCredentials = () => {
 }
 
 const getInstance = () => {
+  if (admin.apps.length > 0) {
+    return admin.apps[0]
+  }
+
   if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
-    return initializeApp({ projectId: process.env.GCLOUD_PROJECT }, "emulator")
+    return admin.initializeApp(
+      { projectId: process.env.GCLOUD_PROJECT },
+      "emulator"
+    )
   }
-  if (apps.length > 0) {
-    return apps[0]
-  }
-  return initializeApp({
-    credential: credential.cert(getCredentials()),
+
+  return admin.initializeApp({
+    credential: admin.credential.cert(getCredentials()),
     databaseURL: "https://phupha-digital.firebaseio.com",
   })
 }

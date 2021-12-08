@@ -1,22 +1,23 @@
-import { app, firestore } from "firebase-admin"
+import * as admin from "firebase-admin"
 import { CreateComment } from "../models"
 
 class CommentService {
-  private firebaseApp: app.App
+  private firebaseApp: admin.app.App
 
-  private firestore: firestore.Firestore
+  private firestore: admin.firestore.Firestore
 
-  private commentsRef: firestore.CollectionReference
+  private commentsRef: admin.firestore.CollectionReference
 
-  constructor(firebaseApp: app.App) {
+  constructor(firebaseApp: admin.app.App) {
     this.firebaseApp = firebaseApp
-    this.firestore = firestore(this.firebaseApp)
+    this.firestore = admin.firestore(this.firebaseApp)
     this.commentsRef = this.firestore.collection("comments")
   }
 
-  createSingle = async (create: CreateComment) => {
-    await this.commentsRef.doc(create.reference).set(create)
-    return create.reference
+  createSingle = async (uid: string, create: CreateComment) => {
+    const doc = this.commentsRef.doc()
+    await doc.set({ ...create, uid })
+    return doc.id
   }
 }
 

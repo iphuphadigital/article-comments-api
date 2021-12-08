@@ -6,7 +6,7 @@ const createSingleSchema = {
   }),
   body: Joi.object({
     reference: Joi.string().required().min(1),
-    parentId: Joi.string().required().min(1),
+    parentId: Joi.string().required().min(1).allow(null),
     text: Joi.string().required().min(1),
   }),
 }
