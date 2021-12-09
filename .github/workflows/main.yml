@@ -60,13 +60,15 @@ jobs:
         with:
           name: "credentials.json"
           json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
 
       - run: npm ci
 
       - name: serverless deploy
         uses: serverless/github-action@master
         with:
-          args: deploy --stage prod --resourceGroup ${AZURE_RESOURCE_GROUP} --subscriptionId ${AZURE_SUBSCRIPTION_ID} --storageNameSuffix ${AZURE_STORAGE_NAME_SUFFIX}
+          args: deploy --stage prod --resourceGroup $AZURE_RESOURCE_GROUP --subscriptionId $AZURE_SUBSCRIPTION_ID --storageNameSuffix $AZURE_STORAGE_NAME_SUFFIX
         env:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
