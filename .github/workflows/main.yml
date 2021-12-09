@@ -28,7 +28,9 @@ jobs:
 
       - run: npm run lint:ci
 
-      - run: npm run test:ci
+      - run: |
+        npm i -g firebase-tools@9.23.0
+        npm run test:ci
 
   # Deploy application
   deploy:
