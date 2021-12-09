@@ -36,8 +36,6 @@ provider:
   # prefix: "sample"  # prefix of generated resource name
   # type: premium  # premium azure functions
   resourceGroup: ${opt:resourceGroup, self:custom.config.resourceGroup}
-  region: ${opt:region, 'South Africa North'}
-  stage: ${opt:stage, 'dev'}
   subscriptionId: ${opt:subscriptionId, self:custom.config.subscriptionId}
   appServicePlan:
     name: ${self:custom.config.servicePlanName}
