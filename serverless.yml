@@ -22,7 +22,7 @@ useDotenv: true
 custom:
   config:
     functionAppName: FA-commentapi
-    storageName: SA${opt:storageNameSuffix}
+    storageName: sa${opt:storageNameSuffix}
     appInsightsName: AI-${self:custom.config.functionAppName}
     servicePlanName: ASP-${opt:resourceGroup, self:custom.config.resourceGroup}
   webpack:
