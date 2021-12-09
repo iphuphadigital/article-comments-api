@@ -92,14 +92,14 @@ class User {
   private getResult = async (
     uid: string
   ): Promise<IdTokenResult | undefined> => {
+    let result: IdTokenResult | undefined
     const createdUser = this.createdUsers.get(uid)
 
     if (createdUser == null) {
       // Probably already deleted
-      return
+      return result
     }
 
-    let result: IdTokenResult | undefined
     const { currentUser } = this.auth
     if (currentUser && currentUser.uid === uid) {
       result = await currentUser.getIdTokenResult(true)
