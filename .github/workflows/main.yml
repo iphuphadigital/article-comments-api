@@ -54,6 +54,13 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Create Google Application Credentials
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "credentials.json"
+          json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
+
       - run: npm ci
 
       - name: serverless deploy
