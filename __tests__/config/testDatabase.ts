@@ -22,6 +22,17 @@ class TestDatabase {
     return doc.id
   }
 
+  createMultipleComments = async (
+    uid: string,
+    count: number
+  ): Promise<string[]> => {
+    const comments = []
+    for (let index = 0; index < count; index += 1) {
+      comments.push(this.createSingleComment(uid))
+    }
+    return Promise.all(comments)
+  }
+
   getSingleComment = async (id: string): Promise<Comment | null> => {
     const snapshot = await this.commentsRef.doc(id).get()
     if (!snapshot.exists) {

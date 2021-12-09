@@ -14,12 +14,14 @@ class CommentService {
 
   getAllByReference = async (
     reference: string,
-    limit: number,
-    page: number
+    limit: number = 5,
+    page: number = 1
   ) => {
+    console.log(limit)
+    console.log(page)
     const col = await this.commentsRef
       .limit(limit)
-      .offset(page * limit)
+      .offset((page - 1) * limit)
       .where("reference", "==", reference)
       .get()
     return col.docs
