@@ -3,6 +3,7 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import CommentService from "../common/commentService"
 import CustomError from "../common/customError"
 import getInstance from "../common/firebaseAppInstance"
+import FirebaseService from "../common/firebaseService"
 import ServerError from "../common/serverError"
 import UserService from "../common/userService"
 import { validateInput } from "../common/validateInput"
@@ -17,8 +18,9 @@ export const handler: AzureFunction = async (
 
   try {
     const firebaseApp = getInstance()
-    const commentService = new CommentService(firebaseApp)
-    const userService = new UserService(firebaseApp)
+    const firebaseService = FirebaseService.getInstance(firebaseApp)
+    const commentService = new CommentService(firebaseService.firestore)
+    const userService = new UserService(firebaseService.auth)
 
     // Validate the user's input. Throw a HTTP 422 if input is invalid or malformed
     await validateInput(deleteSingleSchema, req)

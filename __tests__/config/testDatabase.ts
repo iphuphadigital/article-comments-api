@@ -1,13 +1,13 @@
 import * as admin from "firebase-admin"
 import { Comment, CreateComment } from "../../src/models"
 
-class Database {
+class TestDatabase {
   private firestore: admin.firestore.Firestore
 
   private commentsRef: admin.firestore.CollectionReference
 
-  constructor(firebaseApp: admin.app.App) {
-    this.firestore = admin.firestore(firebaseApp)
+  constructor(firestore: admin.firestore.Firestore) {
+    this.firestore = firestore
     this.commentsRef = this.firestore.collection("comments")
   }
 
@@ -47,4 +47,4 @@ class Database {
   }
 }
 
-export default Database
+export default TestDatabase

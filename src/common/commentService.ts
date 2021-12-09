@@ -2,16 +2,13 @@ import * as admin from "firebase-admin"
 import { CreateComment, UpdateComment } from "../models"
 
 class CommentService {
-  private firebaseApp: admin.app.App
-
-  private firestore: admin.firestore.Firestore
+  private store: admin.firestore.Firestore
 
   private commentsRef: admin.firestore.CollectionReference
 
-  constructor(firebaseApp: admin.app.App) {
-    this.firebaseApp = firebaseApp
-    this.firestore = admin.firestore(this.firebaseApp)
-    this.commentsRef = this.firestore.collection("comments")
+  constructor(store: admin.firestore.Firestore) {
+    this.store = store
+    this.commentsRef = this.store.collection("comments")
   }
 
   getAllByReference = async (

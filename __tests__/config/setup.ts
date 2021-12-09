@@ -1,10 +1,11 @@
 import { initializeApp, getApps } from "firebase/app"
 import User from "./user"
-import Database from "./database"
+import FirebaseService from "../../src/common/firebaseService"
 import getInstance from "../../src/common/firebaseAppInstance"
+import TestDatabase from "./testDatabase"
 
 let user: User
-let db: Database
+let db: TestDatabase
 
 const getGlobalUser = () => user
 const getGlobalDb = () => db
@@ -20,8 +21,9 @@ beforeAll(async () => {
   const apps = getApps()
   const app = apps.length > 0 ? apps[0] : initializeApp(firebaseConfig)
   const adminApp = getInstance()
+  const firebaseService = FirebaseService.getInstance(adminApp)
   user = new User(app)
-  db = new Database(adminApp)
+  db = new TestDatabase(firebaseService.firestore)
 })
 
 afterAll(async () => {
