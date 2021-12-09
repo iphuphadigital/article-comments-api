@@ -66,11 +66,10 @@ jobs:
       - name: serverless deploy
         uses: serverless/github-action@master
         with:
-          args: deploy --stage prod --resourceGroup "$AZURE_RESOURCE_GROUP" --subscriptionId "$AZURE_SUBSCRIPTION_ID" --storageNameSuffix "$AZURE_STORAGE_NAME_SUFFIX"
+          args: deploy --stage prod --resourceGroup ${{ secrets.AZURE_RESOURCE_GROUP }} --subscriptionId ${{ secrets.AZURE_SUBSCRIPTION_ID }} --storageNameSuffix ${{ secrets.AZURE_STORAGE_NAME_SUFFIX }}
         env:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
-          AZURE_STORAGE_NAME_SUFFIX: ${{ secrets.AZURE_STORAGE_NAME_SUFFIX }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
