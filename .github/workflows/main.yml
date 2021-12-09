@@ -34,7 +34,7 @@ jobs:
 
   # Deploy application
   deploy:
-    if: ${{ github.event_name == 'push' && github.repository == 'iphuphadigital/comment-service' }}
+    if: ${{ github.event_name == 'push' && github.repository == 'phuphadigital/comment-service' }}
 
     needs: test
 
