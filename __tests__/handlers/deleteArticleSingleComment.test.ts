@@ -8,7 +8,7 @@ type ParamType = { aid: string; id: string }
 
 describe("handlers.deleteArticleSingleComment", () => {
   let context: Context
-  const articleId = "article-id-1"
+  const articleId = "article-id-deleteArticleSingleComment"
 
   const runTestCase = async (tc: TestCase<CreateComment, ParamType>) => {
     // Make the request

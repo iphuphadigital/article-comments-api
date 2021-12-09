@@ -6,7 +6,7 @@ import getInstance from "../common/firebaseAppInstance"
 import FirebaseService from "../common/firebaseService"
 import ServerError from "../common/serverError"
 import { validateInput } from "../common/validateInput"
-import getAllByReferenceSchema from "../inputValidation/getAllByReferenceSchema"
+import getAllByReferenceSchema from "../inputValidation/getAllSchema"
 
 // eslint-disable-next-line import/prefer-default-export
 export const handler: AzureFunction = async (
@@ -26,7 +26,7 @@ export const handler: AzureFunction = async (
     const comments = await commentService.getAllByReference(
       req.params.aid,
       req.query?.limit && parseInt(req.query.limit, 10),
-      req.query?.page && parseInt(req.query.page, 10)
+      req.query?.startAtId
     )
 
     context.res = {

@@ -14,7 +14,7 @@ describe("handlers.getAllArticleComments", () => {
   let token2: string
   let commentsIds1: string[]
   let commentsIds2: string[]
-  const articleId = "article-id-1"
+  const articleId = "article-id-getAllArticleComments"
 
   const runTestCase = async (tc: TestCase<null, ParamType, QueryType>) => {
     // Make the request
@@ -31,7 +31,6 @@ describe("handlers.getAllArticleComments", () => {
 
     if (context.res?.status === 200) {
       const comments = context.res?.body.comments
-      console.log(comments)
       expect(comments).toBeTruthy()
       expect(comments.length).toBeLessThanOrEqual(tc.request.query?.limit ?? 5)
       // We should also check if the database truly returned the correct
@@ -74,8 +73,8 @@ describe("handlers.getAllArticleComments", () => {
   test("should return an HTTP 200 response (with default values)", async () => {
     // Ensure all comments were created in the database
     const savedComments = []
-    commentsIds1.push(...commentsIds2)
-    commentsIds1.forEach(id => {
+    const allCommentsIds = [...commentsIds1, ...commentsIds2]
+    allCommentsIds.forEach(id => {
       savedComments.push(async () => {
         const db = getGlobalDb()
         const savedComment = await db.getSingleComment(articleId, id)
@@ -127,31 +126,6 @@ describe("handlers.getAllArticleComments", () => {
 
     await runTestCase(tc)
   })
-
-  // test("should return an HTTP 401 response (invalid user token)", async () => {
-  //   const user = getGlobalUser()
-  //   const db = getGlobalDb()
-  //   const uid = await user.create()
-  //   const id = await db.createSingleComment(uid)
-
-  //   // Ensure the comment was  created in the database
-  //   const savedComment = await db.getSingleComment(id)
-  //   expect(savedComment).toBeTruthy()
-
-  //   const tc: TestCase<null, { id: string }> = {
-  //     user: { uid },
-  //     request: {
-  //       params: { id },
-  //       headers: { authorization: "Bearer abc123" },
-  //     },
-  //     expected: {
-  //       statusCode: 401,
-  //       message: "unauthorized user",
-  //     },
-  //   }
-
-  //   await runTestCase(tc)
-  // })
 
   // test("should return an HTTP 404 response (invalid id)", async () => {
   //   const user = getGlobalUser()

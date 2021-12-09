@@ -14,12 +14,12 @@ class TestDatabase {
   }
 
   createSingleComment = async (aid: string, uid: string): Promise<string> => {
+    const doc = this.articlesRef.doc(aid).collection(this.commentsPath).doc()
     const create: CreateComment = {
       articleId: aid,
       parentId: null,
-      text: `this comment was created by ${uid}`,
+      text: `this comment (id: ${doc.id}) was created by ${uid}`,
     }
-    const doc = this.articlesRef.doc(aid).collection(this.commentsPath).doc()
     await doc.set({ ...create, uid })
     return doc.id
   }
@@ -56,9 +56,20 @@ class TestDatabase {
   }
 
   deleteAll = async () => {
-    const querySnapshot = await this.articlesRef.get()
+    const snapshot = await this.articlesRef.get()
+    await this.queryDeletion(snapshot)
+  }
+
+  private queryDeletion = async (
+    querySnapshot: admin.firestore.QuerySnapshot
+  ) => {
     const deletions: Promise<admin.firestore.WriteResult>[] = []
-    querySnapshot.docs.forEach(snapshot => {
+    querySnapshot.docs.forEach(async snapshot => {
+      const cSnapshot = await this.articlesRef
+        .doc(snapshot.id)
+        .collection(this.commentsPath)
+        .get()
+      await this.queryDeletion(cSnapshot)
       deletions.push(this.articlesRef.doc(snapshot.id).delete())
     })
     await Promise.all(deletions)

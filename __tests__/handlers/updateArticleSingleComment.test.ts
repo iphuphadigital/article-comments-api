@@ -8,7 +8,7 @@ type ParamType = { aid: string; id: string }
 
 describe("handlers.updateArticleSingleComment", () => {
   let context: Context
-  const articleId = "article-id-1"
+  const articleId = "article-id-updateArticleSingleComment"
 
   const runTestCase = async (tc: TestCase<UpdateComment, ParamType>) => {
     // Make the request

@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: comments-service
+service: commentapi
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -20,19 +20,36 @@ frameworkVersion: "2"
 useDotenv: true
 
 custom:
+  config:
+    functionAppName: FA-commentapi
+    storageName: SA${opt:storageNameSuffix}
+    appInsightsName: AI-${self:custom.config.functionAppName}
+    servicePlanName: ASP-${opt:resourceGroup, self:custom.config.resourceGroup}
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
 
 provider:
   name: azure
-  region: South Africa North
   runtime: nodejs12
   # os: windows  # windows is default, linux is available
   # prefix: "sample"  # prefix of generated resource name
-  # subscriptionId: A356AC8C-E310-44F4-BF85-C7F29044AF99
-  # stage: dev
   # type: premium  # premium azure functions
+  resourceGroup: ${opt:resourceGroup, self:custom.config.resourceGroup}
+  region: ${opt:region, 'South Africa North'}
+  stage: ${opt:stage, 'dev'}
+  subscriptionId: ${opt:subscriptionId, self:custom.config.subscriptionId}
+  appServicePlan:
+    name: ${self:custom.config.servicePlanName}
+    sku:
+      tier: Consumption
+      name: Y1
+  appInsights:
+    name: ${self:custom.config.appInsightsName}
+  functionApp:
+    name: ${self:custom.config.functionAppName}
+  storageAccount:
+    name: ${self:custom.config.storageName}
 
   environment: # these will be created as application settings
     GOOGLE_APPLICATION_CREDENTIALS: "${env:GOOGLE_APPLICATION_CREDENTIALS}"

@@ -14,3 +14,28 @@ Refer to [Serverless docs](https://serverless.com/framework/docs/providers/azure
 ### Development
 
 1. Once setup is complete, run `npm start` to run a development server.
+
+## Deployment
+
+### Local
+
+To deploy your Azure Functions locally, you will need to ensure that you have the following:
+
+- [Azure Account](https://www.serverless.com/framework/docs/providers/azure/guide/credentials)
+
+Deployment is simple and requires you to run the following command with your specific credentials.
+
+```
+serverless deploy --resourceGroup {your-resource-group} --subscriptionId {your-subscription-id} --storageNameSuffix {your-storage-name-suffix}
+```
+
+This command will deploy to South Africa North region by default. You can add a `--region {your-region}` flag to change the default region or update it in the serverless.yml file.
+
+### GitHub Actions
+
+To deploy your Azure Functions through GitHub Actions (DevOps), you will need to ensure that you have the following:
+
+- [Azure Account](https://www.serverless.com/framework/docs/providers/azure/guide/credentials)
+- Azure [service principal](https://www.serverless.com/framework/docs/providers/azure/guide/credentials#authenticating-with-a-service-principal) credentials stored as secrets on your GitHub repository.
+
+Deployment is automatically triggered on every new commit push to the main branch.

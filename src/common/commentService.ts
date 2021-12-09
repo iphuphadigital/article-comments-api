@@ -16,17 +16,14 @@ class CommentService {
 
   getAllByReference = async (
     aid: string,
-    limit: number = 5,
-    page: number = 1
+    limit?: number,
+    startAtId?: string
   ) => {
-    console.log(limit)
-    console.log(page)
-    const col = await this.articlesRef
-      .doc(aid)
-      .collection(this.commentsPath)
-      .limit(limit)
-      .offset((page - 1) * limit)
-      .get()
+    const commentsRef = this.articlesRef.doc(aid).collection(this.commentsPath)
+    const startAtDoc = startAtId && commentsRef.doc(startAtId)
+    const query = startAtDoc ? commentsRef.startAt(startAtDoc) : commentsRef
+    const col = await query.limit(limit ?? 5).get()
+
     return col.docs
       .filter(doc => doc.exists)
       .map(doc => this.mapSnapshotToComment(doc))
