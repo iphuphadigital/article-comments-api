@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin"
-import { CreateComment, UpdateComment } from "../models"
+import { Comment, CreateComment, UpdateComment } from "../models"
+import CustomError from "./customError"
 
 class CommentService {
   private store: admin.firestore.Firestore
@@ -21,7 +22,15 @@ class CommentService {
       .offset(page * limit)
       .where("reference", "==", reference)
       .get()
-    return col.docs.map(doc => doc.data())
+    return col.docs
+      .filter(doc => doc.exists)
+      .map(doc => this.mapSnapshotToComment(doc))
+  }
+
+  getSingle = async (id: string): Promise<Comment | null> => {
+    const snapshot = await this.commentsRef.doc(id).get()
+    if (!snapshot.exists) throw new CustomError(404, "comment not found")
+    return this.mapSnapshotToComment(snapshot)
   }
 
   createSingle = async (
@@ -41,6 +50,22 @@ class CommentService {
   deleteSingle = async (id: string): Promise<void> => {
     const doc = this.commentsRef.doc(id)
     await doc.delete()
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  private mapSnapshotToComment = (
+    snapshot: admin.firestore.DocumentSnapshot
+  ): Comment | null => {
+    if (snapshot.exists) {
+      const data = snapshot.data()
+      return {
+        reference: data.reference,
+        parentId: data.parentId,
+        text: data.text,
+        uid: data.uid,
+      }
+    }
+    return null
   }
 }
 
