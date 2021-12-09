@@ -1,7 +1,7 @@
 {
-  "name": "comment-api",
+  "name": "article-comments-api",
   "version": "0.1.0",
-  "description": "The Comment REST API. Azure Functions webpack service for the Serverless framework using Typescript",
+  "description": "The Article Comments REST API. Azure Functions webpack service for the Serverless framework using Typescript",
   "scripts": {
     "start": "serverless offline",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --config .eslintrc.js",

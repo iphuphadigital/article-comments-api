@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: commentapi
+service: articlecommentsapi
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -21,7 +21,7 @@ useDotenv: true
 
 custom:
   config:
-    functionAppName: FA-commentapi
+    functionAppName: FA-articlecommentsapi
     storageName: sa${opt:storageNameSuffix}
     appInsightsName: AI-${self:custom.config.functionAppName}
     servicePlanName: ASP-${opt:resourceGroup, self:custom.config.resourceGroup}
