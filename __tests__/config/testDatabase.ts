@@ -4,44 +4,51 @@ import { Comment, CreateComment } from "../../src/models"
 class TestDatabase {
   private firestore: admin.firestore.Firestore
 
-  private commentsRef: admin.firestore.CollectionReference
+  private articlesRef: admin.firestore.CollectionReference
+
+  private commentsPath = "comments"
 
   constructor(firestore: admin.firestore.Firestore) {
     this.firestore = firestore
-    this.commentsRef = this.firestore.collection("comments")
+    this.articlesRef = this.firestore.collection("articles")
   }
 
-  createSingleComment = async (uid: string): Promise<string> => {
+  createSingleComment = async (aid: string, uid: string): Promise<string> => {
     const create: CreateComment = {
-      reference: "article-id-1",
+      articleId: aid,
       parentId: null,
       text: `this comment was created by ${uid}`,
     }
-    const doc = this.commentsRef.doc()
+    const doc = this.articlesRef.doc(aid).collection(this.commentsPath).doc()
     await doc.set({ ...create, uid })
     return doc.id
   }
 
   createMultipleComments = async (
+    aid: string,
     uid: string,
     count: number
   ): Promise<string[]> => {
     const comments = []
     for (let index = 0; index < count; index += 1) {
-      comments.push(this.createSingleComment(uid))
+      comments.push(this.createSingleComment(aid, uid))
     }
     return Promise.all(comments)
   }
 
-  getSingleComment = async (id: string): Promise<Comment | null> => {
-    const snapshot = await this.commentsRef.doc(id).get()
+  getSingleComment = async (
+    aid: string,
+    id: string
+  ): Promise<Comment | null> => {
+    const doc = this.articlesRef.doc(aid).collection(this.commentsPath).doc(id)
+    const snapshot = await doc.get()
     if (!snapshot.exists) {
       return null
     }
 
     const data = snapshot.data()
     return {
-      reference: data.reference,
+      articleId: data.articleId,
       uid: data.uid,
       parentId: data.parentId,
       text: data.text,
@@ -49,10 +56,10 @@ class TestDatabase {
   }
 
   deleteAll = async () => {
-    const querySnapshot = await this.commentsRef.get()
+    const querySnapshot = await this.articlesRef.get()
     const deletions: Promise<admin.firestore.WriteResult>[] = []
     querySnapshot.docs.forEach(snapshot => {
-      deletions.push(this.commentsRef.doc(snapshot.id).delete())
+      deletions.push(this.articlesRef.doc(snapshot.id).delete())
     })
     await Promise.all(deletions)
   }

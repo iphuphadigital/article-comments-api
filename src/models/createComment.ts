@@ -1,5 +1,5 @@
 interface CreateComment {
-  reference: string
+  articleId: string
   parentId?: string | null
   text: string
 }

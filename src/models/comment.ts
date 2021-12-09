@@ -1,5 +1,5 @@
 interface Comment {
-  reference: string
+  articleId: string
   uid: string
   parentId: string | null
   text: string

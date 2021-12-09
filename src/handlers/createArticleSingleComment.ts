@@ -1,13 +1,14 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
+
 import CommentService from "../common/commentService"
 import CustomError from "../common/customError"
-import getInstance from "../common/firebaseAppInstance"
 import FirebaseService from "../common/firebaseService"
+import getInstance from "../common/firebaseAppInstance"
 import ServerError from "../common/serverError"
 import UserService from "../common/userService"
 import { validateInput } from "../common/validateInput"
-import getSingleSchema from "../inputValidation/getSingleSchema"
+import createSingleSchema from "../inputValidation/createSingleSchema"
 
 // eslint-disable-next-line import/prefer-default-export
 export const handler: AzureFunction = async (
@@ -23,20 +24,24 @@ export const handler: AzureFunction = async (
     const userService = new UserService(firebaseService.auth)
 
     // Validate the user's input. Throw a HTTP 422 if input is invalid or malformed
-    await validateInput(getSingleSchema, req)
+    await validateInput(createSingleSchema, req)
 
     // Verify the user. Throw a HTTP 401 error if the token is invalid
     const authHeader = req.headers.authorization ?? ""
     const idToken = authHeader.replace("Bearer ", "")
-    await userService.getUser(idToken)
+    const user = await userService.getUser(idToken)
 
-    const comment = await commentService.getSingle(req.params.id)
+    const id = await commentService.createSingle(req.params.aid, user.uid, {
+      articleId: req.body.articleId,
+      parentId: req.body.parentId,
+      text: req.body.text,
+    })
 
     context.res = {
-      status: 200,
+      status: 201,
       body: {
-        comment,
-        message: "comment retrieved successfully",
+        id,
+        message: "comment created successfully",
       },
     }
   } catch (error) {

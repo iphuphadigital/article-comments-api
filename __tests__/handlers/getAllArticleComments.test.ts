@@ -1,12 +1,12 @@
 import { Context } from "@azure/functions"
-import { handler as getAllByReference } from "../../src/handlers/getAllByReference"
+import { handler as getAllArticleComments } from "../../src/handlers/getAllArticleComments"
 import { getGlobalDb, getGlobalUser } from "../config/setup"
 import { TestCase } from "../config/testCase"
 
-type ParamType = { id: string }
+type ParamType = { aid: string }
 type QueryType = { limit?: number; page?: number }
 
-describe("handlers.getAllByReference", () => {
+describe("handlers.getAllArticleComments", () => {
   let context: Context
   let uid1: string
   let uid2: string
@@ -14,11 +14,11 @@ describe("handlers.getAllByReference", () => {
   let token2: string
   let commentsIds1: string[]
   let commentsIds2: string[]
-  let reference: string
+  const articleId = "article-id-1"
 
   const runTestCase = async (tc: TestCase<null, ParamType, QueryType>) => {
     // Make the request
-    await getAllByReference(context, tc.request)
+    await getAllArticleComments(context, tc.request)
 
     if (context.res?.status === 500) {
       // eslint-disable-next-line no-console
@@ -38,8 +38,8 @@ describe("handlers.getAllByReference", () => {
       // documents and their data
       // const db = getGlobalDb()
       // const savedComment = await db.getSingleComment(tc.request.params?.id)
-      // expect(savedComment.reference).toEqual(
-      //   context.res?.body.comment.reference
+      // expect(savedComment.articleId).toEqual(
+      //   context.res?.body.comment.articleId
       // )
       // expect(savedComment.parentId).toEqual(context.res?.body.comment.parentId)
       // expect(savedComment.uid).toEqual(context.res?.body.comment.uid)
@@ -63,9 +63,8 @@ describe("handlers.getAllByReference", () => {
     uid2 = await user.create()
     token1 = await user.getToken(uid1)
     token2 = await user.getToken(uid2)
-    commentsIds1 = await db.createMultipleComments(uid1, 7)
-    commentsIds2 = await db.createMultipleComments(uid2, 5)
-    reference = "article-id-2"
+    commentsIds1 = await db.createMultipleComments(articleId, uid1, 7)
+    commentsIds2 = await db.createMultipleComments(articleId, uid2, 5)
   })
 
   afterEach(async () => {
@@ -79,7 +78,7 @@ describe("handlers.getAllByReference", () => {
     commentsIds1.forEach(id => {
       savedComments.push(async () => {
         const db = getGlobalDb()
-        const savedComment = await db.getSingleComment(id)
+        const savedComment = await db.getSingleComment(articleId, id)
         expect(savedComment).toBeTruthy()
       })
     })
@@ -88,7 +87,7 @@ describe("handlers.getAllByReference", () => {
     const tc: TestCase<null, ParamType, QueryType> = {
       user: { uid: uid1 },
       request: {
-        params: { id: reference },
+        params: { aid: articleId },
         headers: { authorization: `Bearer ${token1}` },
       },
       expected: {
@@ -107,7 +106,7 @@ describe("handlers.getAllByReference", () => {
     commentsIds1.forEach(id => {
       savedComments.push(async () => {
         const db = getGlobalDb()
-        const savedComment = await db.getSingleComment(id)
+        const savedComment = await db.getSingleComment(articleId, id)
         expect(savedComment).toBeTruthy()
       })
     })
@@ -116,7 +115,7 @@ describe("handlers.getAllByReference", () => {
     const tc: TestCase<null, ParamType, QueryType> = {
       user: { uid: uid2 },
       request: {
-        params: { id: reference },
+        params: { aid: articleId },
         query: { limit: 10, page: 2 },
         headers: { authorization: `Bearer ${token2}` },
       },

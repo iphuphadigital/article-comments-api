@@ -5,6 +5,7 @@ const updateSingleSchema = {
     authorization: Joi.string().required().min(1),
   }),
   params: Joi.object({
+    aid: Joi.string().required().min(1),
     id: Joi.string().required().min(1),
   }),
   body: Joi.object({

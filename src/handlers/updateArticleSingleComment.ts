@@ -30,7 +30,7 @@ export const handler: AzureFunction = async (
     const idToken = authHeader.replace("Bearer ", "")
     await userService.getUser(idToken)
 
-    await commentService.updateSingle(req.params.id, {
+    await commentService.updateSingle(req.params.aid, req.params.id, {
       text: req.body.text,
     })
 

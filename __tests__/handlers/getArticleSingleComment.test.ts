@@ -1,14 +1,17 @@
 import { Context } from "@azure/functions"
-import { handler as getSingle } from "../../src/handlers/getSingle"
+import { handler as getArticleSingleComment } from "../../src/handlers/getArticleSingleComment"
 import { getGlobalDb, getGlobalUser } from "../config/setup"
 import { TestCase } from "../config/testCase"
 
-describe("handlers.getSingle", () => {
-  let context: Context
+type ParamType = { aid: string; id: string }
 
-  const runTestCase = async (tc: TestCase<null>) => {
+describe("handlers.getArticleSingleComment", () => {
+  let context: Context
+  const articleId = "article-id-1"
+
+  const runTestCase = async (tc: TestCase<null, ParamType>) => {
     // Make the request
-    await getSingle(context, tc.request)
+    await getArticleSingleComment(context, tc.request)
 
     if (context.res?.status === 500) {
       // eslint-disable-next-line no-console
@@ -23,9 +26,12 @@ describe("handlers.getSingle", () => {
       // We should also check if the database truly returned the correct
       // document and its data
       const db = getGlobalDb()
-      const savedComment = await db.getSingleComment(tc.request.params?.id)
-      expect(savedComment.reference).toEqual(
-        context.res?.body.comment.reference
+      const savedComment = await db.getSingleComment(
+        articleId,
+        tc.request.params?.id
+      )
+      expect(savedComment.articleId).toEqual(
+        context.res?.body.comment.articleId
       )
       expect(savedComment.parentId).toEqual(context.res?.body.comment.parentId)
       expect(savedComment.uid).toEqual(context.res?.body.comment.uid)
@@ -53,16 +59,16 @@ describe("handlers.getSingle", () => {
     const db = getGlobalDb()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const id = await db.createSingleComment(uid)
+    const id = await db.createSingleComment(articleId, uid)
 
     // Ensure the comment was  created in the database
-    const savedComment = await db.getSingleComment(id)
+    const savedComment = await db.getSingleComment(articleId, id)
     expect(savedComment).toBeTruthy()
 
-    const tc: TestCase<null, { id: string }> = {
+    const tc: TestCase<null, ParamType> = {
       user: { uid },
       request: {
-        params: { id },
+        params: { aid: articleId, id },
         headers: { authorization: `Bearer ${token}` },
       },
       expected: {
@@ -78,16 +84,16 @@ describe("handlers.getSingle", () => {
     const user = getGlobalUser()
     const db = getGlobalDb()
     const uid = await user.create()
-    const id = await db.createSingleComment(uid)
+    const id = await db.createSingleComment(articleId, uid)
 
     // Ensure the comment was  created in the database
-    const savedComment = await db.getSingleComment(id)
+    const savedComment = await db.getSingleComment(articleId, id)
     expect(savedComment).toBeTruthy()
 
-    const tc: TestCase<null, { id: string }> = {
+    const tc: TestCase<null, ParamType> = {
       user: { uid },
       request: {
-        params: { id },
+        params: { aid: articleId, id },
         headers: { authorization: "Bearer abc123" },
       },
       expected: {
@@ -104,16 +110,16 @@ describe("handlers.getSingle", () => {
     const db = getGlobalDb()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const id = await db.createSingleComment(uid)
+    const id = await db.createSingleComment(articleId, uid)
 
     // Ensure the comment was  created in the database
-    const savedComment = await db.getSingleComment(id)
+    const savedComment = await db.getSingleComment(articleId, id)
     expect(savedComment).toBeTruthy()
 
-    const tc: TestCase<null, { id: string }> = {
+    const tc: TestCase<null, ParamType> = {
       user: { uid },
       request: {
-        params: { id: "abc123" },
+        params: { aid: articleId, id: "abc123" },
         headers: { authorization: `Bearer ${token}` },
       },
       expected: {
@@ -129,16 +135,16 @@ describe("handlers.getSingle", () => {
     const user = getGlobalUser()
     const db = getGlobalDb()
     const uid = await user.create()
-    const id = await db.createSingleComment(uid)
+    const id = await db.createSingleComment(articleId, uid)
 
     // Ensure the comment was  created in the database
-    const savedComment = await db.getSingleComment(id)
+    const savedComment = await db.getSingleComment(articleId, id)
     expect(savedComment).toBeTruthy()
 
-    const tc: TestCase<null, { id: string }> = {
+    const tc: TestCase<null, ParamType> = {
       user: { uid },
       request: {
-        params: { id },
+        params: { aid: articleId, id },
         headers: {},
       },
       expected: {
@@ -154,16 +160,16 @@ describe("handlers.getSingle", () => {
     const user = getGlobalUser()
     const db = getGlobalDb()
     const uid = await user.create()
-    const id = await db.createSingleComment(uid)
+    const id = await db.createSingleComment(articleId, uid)
 
     // Ensure the comment was  created in the database
-    const savedComment = await db.getSingleComment(id)
+    const savedComment = await db.getSingleComment(articleId, id)
     expect(savedComment).toBeTruthy()
 
-    const tc: TestCase<null, { id: string }> = {
+    const tc: TestCase<null, ParamType> = {
       user: { uid },
       request: {
-        params: { id },
+        params: { aid: articleId, id },
         headers: { authorization: "" },
       },
       expected: {
@@ -180,16 +186,16 @@ describe("handlers.getSingle", () => {
     const db = getGlobalDb()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const id = await db.createSingleComment(uid)
+    const id = await db.createSingleComment(articleId, uid)
 
     // Ensure the comment was  created in the database
-    const savedComment = await db.getSingleComment(id)
+    const savedComment = await db.getSingleComment(articleId, id)
     expect(savedComment).toBeTruthy()
 
-    const tc: TestCase<null, { id?: string }> = {
+    const tc: TestCase<null, any> = {
       user: { uid },
       request: {
-        params: {},
+        params: { aid: articleId },
         headers: { authorization: `Bearer ${token}` },
       },
       expected: {
@@ -206,16 +212,16 @@ describe("handlers.getSingle", () => {
     const db = getGlobalDb()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const id = await db.createSingleComment(uid)
+    const id = await db.createSingleComment(articleId, uid)
 
     // Ensure the comment was  created in the database
-    const savedComment = await db.getSingleComment(id)
+    const savedComment = await db.getSingleComment(articleId, id)
     expect(savedComment).toBeTruthy()
 
-    const tc: TestCase<null, { id?: string }> = {
+    const tc: TestCase<null, ParamType> = {
       user: { uid },
       request: {
-        params: { id: "" },
+        params: { aid: articleId, id: "" },
         headers: { authorization: `Bearer ${token}` },
       },
       expected: {

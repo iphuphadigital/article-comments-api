@@ -1,15 +1,18 @@
 import { Context } from "@azure/functions"
-import { handler as createSingle } from "../../src/handlers/createSingle"
+import { handler as createArticleSingleComment } from "../../src/handlers/createArticleSingleComment"
 import { CreateComment } from "../../src/models"
 import { getGlobalDb, getGlobalUser } from "../config/setup"
 import { TestCase } from "../config/testCase"
 
-describe("handlers.createSingle", () => {
-  let context: Context
+type ParamType = { aid: string }
 
-  const runTestCase = async (tc: TestCase<CreateComment>) => {
+describe("handlers.createArticleSingleComment", () => {
+  let context: Context
+  const articleId = "article-id-1"
+
+  const runTestCase = async (tc: TestCase<CreateComment, ParamType>) => {
     // Make the request
-    await createSingle(context, tc.request)
+    await createArticleSingleComment(context, tc.request)
 
     if (context.res?.status === 500) {
       // eslint-disable-next-line no-console
@@ -27,9 +30,12 @@ describe("handlers.createSingle", () => {
 
       // We should also check if the database truly inserted the new document and its data
       const db = getGlobalDb()
-      const savedComment = await db.getSingleComment(context.res?.body.id)
+      const savedComment = await db.getSingleComment(
+        articleId,
+        context.res?.body.id
+      )
       expect(savedComment.parentId).toBe(tc.request.body.parentId)
-      expect(savedComment.reference).toBe(tc.request.body.reference)
+      expect(savedComment.articleId).toBe(tc.request.body.articleId)
       expect(savedComment.uid).toBe(tc.user.uid)
       expect(savedComment.text).toBe(tc.request.body.text)
     } else {
@@ -55,16 +61,16 @@ describe("handlers.createSingle", () => {
     const user = getGlobalUser()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const reference = "article-id-1"
     const parentId = null
 
-    const tc: TestCase<CreateComment> = {
+    const tc: TestCase<CreateComment, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: articleId },
         body: {
-          reference,
+          articleId,
           parentId,
-          text: `this is a comment created by ${uid} with parent comment ${parentId} and reference ${reference}`,
+          text: `this is a comment created by ${uid} with parent comment ${parentId} and articleId ${articleId}`,
         },
         headers: { authorization: `Bearer ${token}` },
       },
@@ -81,16 +87,16 @@ describe("handlers.createSingle", () => {
     const user = getGlobalUser()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const reference = "article-id-1"
     const parentId = "df23daAFef3fA30ad"
 
-    const tc: TestCase<CreateComment> = {
+    const tc: TestCase<CreateComment, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: articleId },
         body: {
-          reference,
+          articleId,
           parentId,
-          text: `this is a comment created by ${uid} with parent comment ${parentId} and reference ${reference}`,
+          text: `this is a comment created by ${uid} with parent comment ${parentId} and articleId ${articleId}`,
         },
         headers: { authorization: `Bearer ${token}` },
       },
@@ -106,16 +112,16 @@ describe("handlers.createSingle", () => {
   test("should return an HTTP 401 response (invalid user token)", async () => {
     const user = getGlobalUser()
     const uid = await user.create()
-    const reference = "article-id-1"
     const parentId = null
 
-    const tc: TestCase<CreateComment> = {
+    const tc: TestCase<CreateComment, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: articleId },
         body: {
-          reference,
+          articleId,
           parentId,
-          text: `this is a comment created by ${uid} with parent comment ${parentId} and reference ${reference}`,
+          text: `this is a comment created by ${uid} with parent comment ${parentId} and articleId ${articleId}`,
         },
         headers: { authorization: `Bearer abc123` },
       },
@@ -131,16 +137,16 @@ describe("handlers.createSingle", () => {
   test("should return an HTTP 422 response (no authorization header)", async () => {
     const user = getGlobalUser()
     const uid = await user.create()
-    const reference = "article-id-1"
     const parentId = null
 
-    const tc: TestCase<any> = {
+    const tc: TestCase<any, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: articleId },
         body: {
-          reference,
+          articleId,
           parentId,
-          text: `this is a comment created by ${uid} with parent comment ${parentId} and reference ${reference}`,
+          text: `this is a comment created by ${uid} with parent comment ${parentId} and articleId ${articleId}`,
         },
         headers: {},
       },
@@ -156,16 +162,16 @@ describe("handlers.createSingle", () => {
   test("should return an HTTP 422 response (empty authorization header)", async () => {
     const user = getGlobalUser()
     const uid = await user.create()
-    const reference = "article-id-1"
     const parentId = null
 
-    const tc: TestCase<any> = {
+    const tc: TestCase<any, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: articleId },
         body: {
-          reference,
+          articleId,
           parentId,
-          text: `this is a comment created by ${uid} with parent comment ${parentId} and reference ${reference}`,
+          text: `this is a comment created by ${uid} with parent comment ${parentId} and articleId ${articleId}`,
         },
         headers: { authorization: "" },
       },
@@ -178,19 +184,19 @@ describe("handlers.createSingle", () => {
     await runTestCase(tc)
   })
 
-  test("should return an HTTP 422 response (no reference)", async () => {
+  test("should return an HTTP 422 response (no articleId)", async () => {
     const user = getGlobalUser()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const reference = "article-id-1"
     const parentId = null
 
-    const tc: TestCase<any> = {
+    const tc: TestCase<any, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: articleId },
         body: {
           parentId,
-          text: `this is a comment created by ${uid} with parent comment ${parentId} and reference ${reference}`,
+          text: `this is a comment created by ${uid} with parent comment ${parentId} and articleId ${articleId}`,
         },
         headers: { authorization: `Bearer ${token}` },
       },
@@ -203,20 +209,20 @@ describe("handlers.createSingle", () => {
     await runTestCase(tc)
   })
 
-  test("should return an HTTP 422 response (empty reference)", async () => {
+  test("should return an HTTP 422 response (empty articleId)", async () => {
     const user = getGlobalUser()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const reference = ""
     const parentId = null
 
-    const tc: TestCase<any> = {
+    const tc: TestCase<any, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: "" },
         body: {
-          reference,
+          articleId,
           parentId,
-          text: `this is a comment created by ${uid} with parent comment ${parentId} and reference ${reference}`,
+          text: `this is a comment created by ${uid} with parent comment ${parentId} and articleId ${articleId}`,
         },
         headers: { authorization: `Bearer ${token}` },
       },
@@ -233,15 +239,15 @@ describe("handlers.createSingle", () => {
     const user = getGlobalUser()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const reference = "article-id-1"
     const parentId = null
 
-    const tc: TestCase<any> = {
+    const tc: TestCase<any, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: articleId },
         body: {
-          reference,
-          text: `this is a comment created by ${uid} with parent comment ${parentId} and reference ${reference}`,
+          articleId,
+          text: `this is a comment created by ${uid} with parent comment ${parentId} and articleId ${articleId}`,
         },
         headers: { authorization: `Bearer ${token}` },
       },
@@ -258,16 +264,16 @@ describe("handlers.createSingle", () => {
     const user = getGlobalUser()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const reference = "article-id-1"
     const parentId = ""
 
-    const tc: TestCase<any> = {
+    const tc: TestCase<any, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: articleId },
         body: {
-          reference,
+          articleId,
           parentId,
-          text: `this is a comment created by ${uid} with parent comment ${parentId} and reference ${reference}`,
+          text: `this is a comment created by ${uid} with parent comment ${parentId} and articleId ${articleId}`,
         },
         headers: { authorization: `Bearer ${token}` },
       },
@@ -284,14 +290,14 @@ describe("handlers.createSingle", () => {
     const user = getGlobalUser()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const reference = "article-id-1"
     const parentId = null
 
-    const tc: TestCase<any> = {
+    const tc: TestCase<any, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: articleId },
         body: {
-          reference,
+          articleId,
           parentId,
         },
         headers: { authorization: `Bearer ${token}` },
@@ -309,14 +315,14 @@ describe("handlers.createSingle", () => {
     const user = getGlobalUser()
     const uid = await user.create()
     const token = await user.getToken(uid)
-    const reference = "article-id-1"
     const parentId = null
 
-    const tc: TestCase<any> = {
+    const tc: TestCase<any, ParamType> = {
       user: { uid },
       request: {
+        params: { aid: articleId },
         body: {
-          reference,
+          articleId,
           parentId,
           text: "",
         },

@@ -5,8 +5,9 @@ import CustomError from "../common/customError"
 import getInstance from "../common/firebaseAppInstance"
 import FirebaseService from "../common/firebaseService"
 import ServerError from "../common/serverError"
+import UserService from "../common/userService"
 import { validateInput } from "../common/validateInput"
-import getAllByReferenceSchema from "../inputValidation/getAllByReferenceSchema"
+import deleteSingleSchema from "../inputValidation/deleteSingleSchema"
 
 // eslint-disable-next-line import/prefer-default-export
 export const handler: AzureFunction = async (
@@ -19,21 +20,22 @@ export const handler: AzureFunction = async (
     const firebaseApp = getInstance()
     const firebaseService = FirebaseService.getInstance(firebaseApp)
     const commentService = new CommentService(firebaseService.firestore)
+    const userService = new UserService(firebaseService.auth)
 
     // Validate the user's input. Throw a HTTP 422 if input is invalid or malformed
-    await validateInput(getAllByReferenceSchema, req)
+    await validateInput(deleteSingleSchema, req)
 
-    const comments = await commentService.getAllByReference(
-      req.params.id,
-      req.query?.limit && parseInt(req.query.limit, 10),
-      req.query?.page && parseInt(req.query.page, 10)
-    )
+    // Verify the user. Throw a HTTP 401 error if the token is invalid
+    const authHeader = req.headers.authorization ?? ""
+    const idToken = authHeader.replace("Bearer ", "")
+    await userService.getUser(idToken)
+
+    await commentService.deleteSingle(req.params.aid, req.params.id)
 
     context.res = {
       status: 200,
       body: {
-        comments,
-        message: "all comments retrieved successfully",
+        message: "comment deleted successfully",
       },
     }
   } catch (error) {
