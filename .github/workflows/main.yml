@@ -60,8 +60,6 @@ jobs:
         with:
           name: "credentials.json"
           json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
 
       - run: npm ci
 
